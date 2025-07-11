@@ -43,11 +43,27 @@ def run_killswitch_bot():
 
                 print("📉 Closing Positions")
                 open_positions = fetch_open_position(positions)
-                closed_flag = close_positions(open_positions)
+                close_positions(open_positions)
 
                 print("📋 Canceling Orders")
                 pending_orders = fetch_pending_orders(orders)
-                canceled_flag = cancel_pending_orders(pending_orders)
+                cancel_pending_orders(pending_orders)
+
+                try:
+                    print("🫡 Final Check")
+                    time.sleep(1)
+                    orders = make_requests(method="get", endpoint="/orders")
+                    pending_orders = fetch_pending_orders(orders)
+
+                    positions = make_requests(method="get", endpoint="/positions")
+                    open_positions = fetch_open_position(positions)
+
+                    closed_flag = not len(pending_orders)
+                    canceled_flag = not len(open_positions)
+
+                except Exception as e:
+                    print("⚠️ Error In Getting Positions or Orders list::", e)
+                    time.sleep(1)
 
                 if closed_flag and canceled_flag:
                     kill_switch()
