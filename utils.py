@@ -87,7 +87,7 @@ def make_requests(method, endpoint, param=None, payload=None):
             time.sleep(2 ** (attempt - 1))
         
         except requests.exceptions.RequestException as e:
-            logger.exception(f"⚠️ Exception during making requests: {e}")
+            logger.exception("⚠️ Exception during making requests")
             if attempt == 3:
                 try:
                     raise Exception("All attempts failed!")
@@ -98,7 +98,7 @@ def make_requests(method, endpoint, param=None, payload=None):
             time.sleep(2 ** (attempt - 1))
             
         except Exception as e:
-            logger.exception(f"🐞 An unexpected exception occurred: {e}")
+            logger.exception("🐞 An unexpected exception occurred")
             if attempt == 3:
                 try:
                     raise Exception("All attempts failed!")
@@ -173,7 +173,7 @@ def close_positions(open_positions):
             make_requests(method="post", endpoint="/orders", payload=payload)
             success_count += 1
         except Exception as e:
-            logger.exception(f"❌🔁 Error In Closing Positions:: {e}")
+            logger.exception("❌🔁 Error In Closing Positions")
             
     return len(open_positions) == success_count
 
@@ -207,7 +207,7 @@ def cancel_pending_orders(pending_order_ids_list):
             make_requests(method="delete", endpoint=f"/orders/{ids}")
             success_count += 1
         except Exception as e:
-            logger.exception(f"❌📦 Error In Cancelling Orders:: {e}")
+            logger.exception("❌📦 Error In Cancelling Orders")
 
     return len(pending_order_ids_list) == success_count
     
@@ -230,7 +230,7 @@ def kill_switch():
             logger.info(f"⚠️ Unexpected KILL SWITCH STATUS: {status}")
 
     except Exception as e:
-        logger.exception(f"❌ Error in Activating Killswitch: {e}")
+        logger.exception("❌ Error in Activating Killswitch")
 
 
 def deactivate_killswitch():
@@ -252,7 +252,7 @@ def deactivate_killswitch():
                 logger.info(f"⚠️ Unexpected Deactivating Kill Switch Status: {status}")
 
     except Exception as e:
-        logger.exception(f"❌ Error in Deactivating Killswitch: {e}")
+        logger.exception("❌ Error in Deactivating Killswitch")
 
 
 def trading_hour_over():

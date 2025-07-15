@@ -65,7 +65,7 @@ def run_killswitch_bot():
                     canceled_flag = not len(open_positions)
 
                 except Exception as e:
-                    logger.exception("⚠️ Error In Getting Positions or Orders list::", e)
+                    logger.exception("⚠️ Error In Getting Positions or Orders list")
                     time.sleep(1)
 
                 if closed_flag and canceled_flag:
@@ -82,5 +82,5 @@ def run_killswitch_bot():
             time.sleep(polling_interval)
         
         except Exception as e:
-            logger.exception("⚠️ Error In Getting Positions or Orders list::", e)
+            logger.exception("⚠️ Error In Getting Positions or Orders list")
             time.sleep(1)
