@@ -37,11 +37,8 @@ def make_requests(method, endpoint, param=None, payload=None):
             elif method == "put":
                 response = session.put(url, json=payload, timeout=timeout)
             else:
-                try:
-                    raise ValueError("Unsuported Method")
-                except ValueError as e:
-                    logger.exception("Unsuported Method")
-                    raise
+                logger.exception("❌ Unsupported HTTP Method")
+                raise ValueError("Unsupported HTTP Method")
             response.raise_for_status()
             return response.json()
         
@@ -75,13 +72,11 @@ def make_requests(method, endpoint, param=None, payload=None):
                     'error_message': e.response.text[:200]  # limit to avoid dumping HTML
                 }
 
-            logger.info("🧾 API Error Details: ", remarks)
+            logger.info(f"🧾 API Error Details: {remarks}")
 
             if attempt == 3:
-                try:
-                    raise Exception("All attempts failed!")
-                except Exception:
-                    logger.exception("All attempts failed!")
+                logger.exception("All attempts failed!")
+                raise Exception("All attempts failed!")
 
             logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
@@ -89,10 +84,8 @@ def make_requests(method, endpoint, param=None, payload=None):
         except requests.exceptions.RequestException as e:
             logger.exception("⚠️ Exception during making requests")
             if attempt == 3:
-                try:
-                    raise Exception("All attempts failed!")
-                except Exception:
-                    logger.exception("All attempts failed!")
+                logger.exception("All attempts failed!")
+                raise Exception("All attempts failed!")
 
             logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
@@ -100,10 +93,8 @@ def make_requests(method, endpoint, param=None, payload=None):
         except Exception as e:
             logger.exception("🐞 An unexpected exception occurred")
             if attempt == 3:
-                try:
-                    raise Exception("All attempts failed!")
-                except Exception:
-                    logger.exception("All attempts failed!")
+                logger.exception("All attempts failed!")
+                raise Exception("All attempts failed!")
                     
             logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
