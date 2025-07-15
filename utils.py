@@ -76,7 +76,7 @@ def make_requests(method, endpoint, param=None, payload=None):
 
             if attempt == 3:
                 logger.exception("All attempts failed!")
-                raise Exception("All attempts failed!")
+                raise Exception("All attempts failed!") from e
 
             logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
@@ -85,7 +85,7 @@ def make_requests(method, endpoint, param=None, payload=None):
             logger.exception("⚠️ Exception during making requests")
             if attempt == 3:
                 logger.exception("All attempts failed!")
-                raise Exception("All attempts failed!")
+                raise Exception("All attempts failed!") from e
 
             logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
@@ -94,7 +94,7 @@ def make_requests(method, endpoint, param=None, payload=None):
             logger.exception("🐞 An unexpected exception occurred")
             if attempt == 3:
                 logger.exception("All attempts failed!")
-                raise Exception("All attempts failed!")
+                raise Exception("All attempts failed!") from e
                     
             logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
