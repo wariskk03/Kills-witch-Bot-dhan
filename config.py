@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 polling_interval = 1
-DAILY_RISK = -2050
+DAILY_RISK = -3000
 base_url = "https://api.dhan.co/v2"
 timeout = 5
 
