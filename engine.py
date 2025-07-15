@@ -1,8 +1,11 @@
 import os
 import time
+
 from config import DAILY_RISK, polling_interval, session
 from utils import make_requests, calculate_pnl, fetch_open_position, close_positions, fetch_pending_orders, cancel_pending_orders, trading_hour_over, kill_switch, calculate_bokerage, traded_orders, calculate_trade_turnover, deactivate_killswitch
+from log_config import log_config
 
+logger = log_config(__name__)
 
 def run_killswitch_bot():
     '''
@@ -37,20 +40,20 @@ def run_killswitch_bot():
             PNL = calculate_pnl(positions) - previous_brokerage
 
             os.system("clear")
-            print("📊 running-pnl: ", round(PNL, 2))
+            logger.debug("📊 running-pnl: ", round(PNL, 2))
             if PNL < float(DAILY_RISK):
-                print("🚨 ACTIVATING KILLSWITCH!!!")
+                logger.info("🚨 ACTIVATING KILLSWITCH!!!")
 
-                print("📉 Closing Positions")
+                logger.info("📉 Closing Positions")
                 open_positions = fetch_open_position(positions)
                 close_positions(open_positions)
 
-                print("📋 Canceling Orders")
+                logger.info("📋 Canceling Orders")
                 pending_orders = fetch_pending_orders(orders)
                 cancel_pending_orders(pending_orders)
 
                 try:
-                    print("🫡 Final Check")
+                    logger.info("🫡 Final Check")
                     time.sleep(1)
                     orders = make_requests(method="get", endpoint="/orders")
                     pending_orders = fetch_pending_orders(orders)
@@ -62,7 +65,7 @@ def run_killswitch_bot():
                     canceled_flag = not len(open_positions)
 
                 except Exception as e:
-                    print("⚠️ Error In Getting Positions or Orders list::", e)
+                    logger.exception("⚠️ Error In Getting Positions or Orders list::", e)
                     time.sleep(1)
 
                 if closed_flag and canceled_flag:
@@ -73,11 +76,11 @@ def run_killswitch_bot():
                     break
 
             if trading_hour_over():
-                print("⏰ Trading hours over. Exiting bot.")
+                logger.info("⏰ Trading hours over. Exiting bot.")
                 break
 
             time.sleep(polling_interval)
         
         except Exception as e:
-            print("⚠️ Error In Getting Positions or Orders list::", e)
+            logger.exception("⚠️ Error In Getting Positions or Orders list::", e)
             time.sleep(1)

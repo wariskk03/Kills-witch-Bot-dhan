@@ -1,0 +1,7 @@
+2025-07-16 00:08:53,172 | INFO | engine | 🚨 ACTIVATING KILLSWITCH!!!
+2025-07-16 00:08:53,173 | INFO | engine | 📉 Closing Positions
+2025-07-16 00:08:53,173 | INFO | engine | 📋 Canceling Orders
+2025-07-16 00:08:53,173 | INFO | engine | 🫡 Final Check
+2025-07-16 00:08:54,423 | INFO | utils | ✅ KILL SWITCH STATUS: Kill Switch Activated
+2025-07-16 00:08:54,594 | INFO | utils | 🟢 Kill Switch DEACTIVATED!
+2025-07-16 00:08:54,687 | INFO | utils | ✅ KILL SWITCH STATUS: Kill Switch Activated

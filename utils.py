@@ -3,6 +3,9 @@ import requests
 from datetime import datetime
 
 from config import base_url, timeout, create_session, session as global_session
+from log_config import log_config
+
+logger = log_config(__name__)
 
 session = global_session
 
@@ -34,22 +37,26 @@ def make_requests(method, endpoint, param=None, payload=None):
             elif method == "put":
                 response = session.put(url, json=payload, timeout=timeout)
             else:
-                raise ValueError("Unsuported Method")
+                try:
+                    raise ValueError("Unsuported Method")
+                except ValueError as e:
+                    logger.exception("Unsuported Method")
+                    raise
             response.raise_for_status()
             return response.json()
         
         except requests.exceptions.ConnectionError:
-            print(f"📡 Connection error — network may be down or changed. Attempt {attempt}")
+            logger.exception(f"📡 Connection error — network may be down or changed. Attempt {attempt}")
             
             session.close()           
             session = create_session() 
             global_session = session
 
-            print(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
 
         except requests.exceptions.HTTPError as e:
-            print(f"📡 Unsuccessful response from API (Status: {e.response.status_code})")
+            logger.exception(f"📡 Unsuccessful response from API (Status: {e.response.status_code})")
             try:
                 error_response_json = e.response.json()
                 error_type = error_response_json.get('errorType')
@@ -68,25 +75,37 @@ def make_requests(method, endpoint, param=None, payload=None):
                     'error_message': e.response.text[:200]  # limit to avoid dumping HTML
                 }
 
-            print("🧾 API Error Details: ", remarks)
+            logger.info("🧾 API Error Details: ", remarks)
 
             if attempt == 3:
-                raise Exception("All attempts failed!")
-            print(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+                try:
+                    raise Exception("All attempts failed!")
+                except Exception:
+                    logger.exception("All attempts failed!")
+
+            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
         
         except requests.exceptions.RequestException as e:
-            print(f"⚠️ Exception during making requests: {e}")
+            logger.exception(f"⚠️ Exception during making requests: {e}")
             if attempt == 3:
-                raise Exception("All attempts failed!")
-            print(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+                try:
+                    raise Exception("All attempts failed!")
+                except Exception:
+                    logger.exception("All attempts failed!")
+
+            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
             
         except Exception as e:
-            print(f"🐞 An unexpected exception occurred: {e}")
+            logger.exception(f"🐞 An unexpected exception occurred: {e}")
             if attempt == 3:
-                raise Exception("All attempts failed!")
-            print(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+                try:
+                    raise Exception("All attempts failed!")
+                except Exception:
+                    logger.exception("All attempts failed!")
+                    
+            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
             time.sleep(2 ** (attempt - 1))
 
 
@@ -154,7 +173,7 @@ def close_positions(open_positions):
             make_requests(method="post", endpoint="/orders", payload=payload)
             success_count += 1
         except Exception as e:
-            print(f"❌🔁 Error In Closing Positions:: {e}")
+            logger.exception(f"❌🔁 Error In Closing Positions:: {e}")
             
     return len(open_positions) == success_count
 
@@ -188,7 +207,7 @@ def cancel_pending_orders(pending_order_ids_list):
             make_requests(method="delete", endpoint=f"/orders/{ids}")
             success_count += 1
         except Exception as e:
-            print(f"❌📦 Error In Cancelling Orders:: {e}")
+            logger.exception(f"❌📦 Error In Cancelling Orders:: {e}")
 
     return len(pending_order_ids_list) == success_count
     
@@ -206,12 +225,12 @@ def kill_switch():
         status = response.get("killSwitchStatus", "UNKNOWN")
 
         if status == "Kill Switch Activated":
-            print(f"✅ KILL SWITCH STATUS: {status}")
+            logger.info(f"✅ KILL SWITCH STATUS: {status}")
         else:
-            print(f"⚠️ Unexpected KILL SWITCH STATUS: {status}")
+            logger.info(f"⚠️ Unexpected KILL SWITCH STATUS: {status}")
 
     except Exception as e:
-        print(f"❌ Error in Activating Killswitch: {e}")
+        logger.exception(f"❌ Error in Activating Killswitch: {e}")
 
 
 def deactivate_killswitch():
@@ -228,12 +247,12 @@ def deactivate_killswitch():
             status = response.get("killSwitchStatus") 
 
             if status == "Kill Switch Deactivated":
-                print("🟢 Kill Switch DEACTIVATED!")
+                logger.info("🟢 Kill Switch DEACTIVATED!")
             else:
-                print(f"⚠️ Unexpected Deactivating Kill Switch Status: {status}")
+                logger.info(f"⚠️ Unexpected Deactivating Kill Switch Status: {status}")
 
     except Exception as e:
-        print(f"❌ Error in Deactivating Killswitch: {e}")
+        logger.exception(f"❌ Error in Deactivating Killswitch: {e}")
 
 
 def trading_hour_over():
