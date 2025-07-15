@@ -11,3 +11,4 @@ if __name__ == "__main__":
         logger.info("\n👋 [EXIT] Interrupted by user.")
     finally:
         session.close()
+        logger.critical("\n\n=====================================================\n")

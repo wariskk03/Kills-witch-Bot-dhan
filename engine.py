@@ -40,7 +40,7 @@ def run_killswitch_bot():
             PNL = calculate_pnl(positions) - previous_brokerage
 
             os.system("clear")
-            logger.debug("📊 running-pnl: ", round(PNL, 2))
+            logger.debug(f"📊 running-pnl: {round(PNL, 2)}")
             if PNL < float(DAILY_RISK):
                 logger.info("🚨 ACTIVATING KILLSWITCH!!!")
 
