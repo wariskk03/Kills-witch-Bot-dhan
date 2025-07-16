@@ -5,7 +5,9 @@ from datetime import datetime
 from config import base_url, timeout, create_session, session as global_session
 from log_config import log_config
 
-logger = log_config(__name__)
+path = "/Users/wariskhan/Python Algo/dhanhq_api/Killswitch_bot/logs.log"
+
+logger = log_config(__name__, path)
 
 session = global_session
 

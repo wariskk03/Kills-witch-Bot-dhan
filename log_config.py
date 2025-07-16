@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-def log_config(name, file_path="logs.log", file_level=logging.INFO, console_level:list=[logging.DEBUG, logging.INFO]):
+def log_config(name, file_path, file_level=logging.INFO, console_level:list=[logging.DEBUG, logging.INFO]):
     
     # create logger and pass all level to handlers
     logger = logging.getLogger(name)
