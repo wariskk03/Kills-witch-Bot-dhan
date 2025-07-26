@@ -47,6 +47,10 @@ def make_requests(method, endpoint, param=None, payload=None):
         except requests.exceptions.ConnectionError:
             logger.exception(f"📡 Connection error — network may be down or changed. Attempt {attempt}")
             
+            if attempt == 3:
+                logger.exception("All attempts failed!")
+                raise Exception("All attempts failed!") from e
+            
             session.close()           
             session = create_session() 
             global_session = session
