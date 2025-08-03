@@ -44,7 +44,7 @@ def make_requests(method, endpoint, param=None, payload=None):
             response.raise_for_status()
             return response.json()
         
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError as e:
             logger.exception(f"📡 Connection error — network may be down or changed. Attempt {attempt}")
             
             if attempt == 3:
@@ -70,16 +70,16 @@ def make_requests(method, endpoint, param=None, payload=None):
                     'error_type' : error_type,
                     'error_message': error_message
                 }
-            except ValueError:
+            except ValueError as e:
                 # Fallback when error body is not JSON
                 remarks = {
                     'error_code': None,
                     'error_type': "Non-JSON Error",
                     'error_message': e.response.text[:200]  # limit to avoid dumping HTML
                 }
-
+            
             logger.info(f"🧾 API Error Details: {remarks}")
-
+            
             if attempt == 3:
                 logger.exception("All attempts failed!")
                 raise Exception("All attempts failed!") from e

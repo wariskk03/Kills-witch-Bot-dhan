@@ -85,4 +85,5 @@ def run_killswitch_bot():
         
         except Exception as e:
             logger.exception("⚠️ Error In Getting Positions or Orders list")
-            time.sleep(1)
+            break
+        
