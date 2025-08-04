@@ -46,18 +46,18 @@ def make_requests(method, endpoint, param=None, payload=None):
             logger.warning(f"📡 Connection error — network may be down or changed. Attempt {attempt}")
             
             if attempt == 3:
-                logger.exception("All attempts failed!")
+                logger.warning("All attempts failed!")
                 raise Exception("All attempts failed!") from e
             
             session.close()           
             session = create_session() 
             global_session = session
 
-            logger.warning(f"🔄 Retrying...")
+            logger.info(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
 
         except requests.exceptions.HTTPError as e:
-            logger.exception(f"📡 Unsuccessful response from API (Status: {e.response.status_code})")
+            logger.warning(f"📡 Unsuccessful response from API (Status: {e.response.status_code})")
             try:
                 error_response_json = e.response.json()
                 error_type = error_response_json.get('errorType')
@@ -76,31 +76,32 @@ def make_requests(method, endpoint, param=None, payload=None):
                     'error_message': e.response.text[:200]  # limit to avoid dumping HTML
                 }
             
-            logger.info(f"🧾 API Error Details: {remarks}")
+            logger.warning(f"🧾 API Error Details: {remarks}")
+            logger.error(f"🧾 API Error Details: {remarks}")
             
             if attempt == 3:
-                logger.exception("All attempts failed!")
+                logger.warning("All attempts failed!")
                 raise Exception("All attempts failed!") from e
 
-            logger.warning(f"🔄 Retrying...")
+            logger.info(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
         
         except requests.exceptions.RequestException as e:
-            logger.exception("⚠️ Exception during making requests")
+            logger.warning("⚠️ Exception during making requests")
             if attempt == 3:
-                logger.exception("All attempts failed!")
+                logger.warning("All attempts failed!")
                 raise Exception("All attempts failed!") from e
 
-            logger.warning(f"🔄 Retrying...")
+            logger.info(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
             
         except Exception as e:
             logger.exception("🐞 An unexpected exception occurred")
             if attempt == 3:
                 logger.exception("All attempts failed!")
-                raise Exception("All attempts failed!") from e
+                raise
                     
-            logger.warning(f"🔄 Retrying...")
+            logger.info(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
 
 
@@ -168,7 +169,7 @@ def close_positions(open_positions):
             make_requests(method="post", endpoint="/orders", payload=payload)
             success_count += 1
         except Exception as e:
-            logger.exception("❌🔁 Error In Closing Positions")
+            logger.warning("❌🔁 Error In Closing Positions")
             
     return len(open_positions) == success_count
 
@@ -202,7 +203,7 @@ def cancel_pending_orders(pending_order_ids_list):
             make_requests(method="delete", endpoint=f"/orders/{ids}")
             success_count += 1
         except Exception as e:
-            logger.exception("❌📦 Error In Cancelling Orders")
+            logger.warning("❌📦 Error In Cancelling Orders")
 
     return len(pending_order_ids_list) == success_count
     
@@ -222,7 +223,7 @@ def kill_switch():
         if status == "Kill Switch Activated":
             logger.info(f"✅ KILL SWITCH STATUS: {status}")
         else:
-            logger.info(f"⚠️ Unexpected KILL SWITCH STATUS: {status}")
+            logger.warning(f"⚠️ Unexpected KILL SWITCH STATUS: {status}")
 
     except Exception as e:
         logger.exception("❌ Error in Activating Killswitch")

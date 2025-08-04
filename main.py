@@ -8,7 +8,8 @@ if __name__ == "__main__":
     try:
         run_killswitch_bot()
     except KeyboardInterrupt:
-        logger.info("\n👋 [EXIT] Interrupted by user.")
+        logger.warning("\n👋 [EXIT] Interrupted by user.")
     finally:
         session.close()
         logger.critical("\n\n=====================================================\n")
+        logger.info("\n\n=====================================================\n")

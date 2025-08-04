@@ -23,7 +23,7 @@ def log_config(name):
         # activity log handler
         activity_handler = RotatingFileHandler(activity_log, maxBytes=5_000_000, backupCount=3)
         activity_handler.setLevel(logging.DEBUG)
-        activity_handler.addFilter(lambda record: record.levelno < logging.ERROR)
+        activity_handler.addFilter(lambda record: logging.DEBUG < record.levelno < logging.ERROR)
         activity_handler.setFormatter(format)
         logger.addHandler(activity_handler)
 

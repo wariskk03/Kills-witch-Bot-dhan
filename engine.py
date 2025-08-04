@@ -72,7 +72,6 @@ def run_killswitch_bot():
                     kill_switch()
                     deactivate_killswitch()
                     kill_switch()
-                    session.close()
                     break
 
             if trading_hour_over():
