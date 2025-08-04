@@ -35,7 +35,7 @@ def log_config(name):
 
         # stream log handler
         stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.debug)
+        stream_handler.setLevel(logging.DEBUG)
         stream_handler.setFormatter(logging.Formatter("%(message)s"))
         stream_handler.addFilter(lambda record: record.levelno < logging.ERROR)
         logger.addHandler(stream_handler)
