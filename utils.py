@@ -5,9 +5,7 @@ from datetime import datetime
 from config import base_url, timeout, create_session, session as global_session
 from log_config import log_config
 
-path = "/Users/wariskhan/Python Algo/dhanhq_api/Killswitch_bot/logs.log"
-
-logger = log_config(__name__, path)
+logger = log_config(__name__)
 
 session = global_session
 
@@ -39,13 +37,13 @@ def make_requests(method, endpoint, param=None, payload=None):
             elif method == "put":
                 response = session.put(url, json=payload, timeout=timeout)
             else:
-                logger.exception("❌ Unsupported HTTP Method")
+                logger.critical("❌ Unsupported HTTP Method")
                 raise ValueError("Unsupported HTTP Method")
             response.raise_for_status()
             return response.json()
         
         except requests.exceptions.ConnectionError as e:
-            logger.exception(f"📡 Connection error — network may be down or changed. Attempt {attempt}")
+            logger.warning(f"📡 Connection error — network may be down or changed. Attempt {attempt}")
             
             if attempt == 3:
                 logger.exception("All attempts failed!")
@@ -55,7 +53,7 @@ def make_requests(method, endpoint, param=None, payload=None):
             session = create_session() 
             global_session = session
 
-            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+            logger.warning(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
 
         except requests.exceptions.HTTPError as e:
@@ -84,7 +82,7 @@ def make_requests(method, endpoint, param=None, payload=None):
                 logger.exception("All attempts failed!")
                 raise Exception("All attempts failed!") from e
 
-            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+            logger.warning(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
         
         except requests.exceptions.RequestException as e:
@@ -93,7 +91,7 @@ def make_requests(method, endpoint, param=None, payload=None):
                 logger.exception("All attempts failed!")
                 raise Exception("All attempts failed!") from e
 
-            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+            logger.warning(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
             
         except Exception as e:
@@ -102,7 +100,7 @@ def make_requests(method, endpoint, param=None, payload=None):
                 logger.exception("All attempts failed!")
                 raise Exception("All attempts failed!") from e
                     
-            logger.warning(f"🔄 Retrying in {2 ** (attempt - 1)}s...")
+            logger.warning(f"🔄 Retrying...")
             time.sleep(2 ** (attempt - 1))
 
 

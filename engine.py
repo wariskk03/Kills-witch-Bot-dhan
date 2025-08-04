@@ -2,12 +2,10 @@ import os
 import time
 
 from config import DAILY_RISK, polling_interval, session
-from utils import make_requests, calculate_pnl, fetch_open_position, close_positions, fetch_pending_orders, cancel_pending_orders, trading_hour_over, kill_switch, calculate_bokerage, traded_orders, calculate_trade_turnover, deactivate_killswitch
+from utils import *
 from log_config import log_config
 
-path = "/Users/wariskhan/Python Algo/dhanhq_api/Killswitch_bot/logs.log"
-
-logger = log_config(__name__, path)
+logger = log_config(__name__)
 
 def run_killswitch_bot():
     '''

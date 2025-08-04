@@ -1,30 +1,43 @@
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 
-def log_config(name, file_path, file_level=logging.INFO, console_level:list=[logging.DEBUG, logging.INFO]):
+def log_config(name):
+    log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
     
-    # create logger and pass all level to handlers
+    if not os.path.exists(log_path):
+        os.mkdir(log_path)
+    
+    error_log = os.path.join(log_path, "error.log")
+    activity_log = os.path.join(log_path, "activity.log")
+
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
     if not logger.handlers:
-        
-        # set file handler
-        file_handler = RotatingFileHandler(
-            file_path,
-            maxBytes=5_000_000,
-            backupCount=3
-        )
-        format = logging.Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s")
-        file_handler.setFormatter(format)
-        file_handler.setLevel(file_level)
-        logger.addHandler(file_handler)
 
-        # set stream handler
-        console_handler = logging.StreamHandler()
-        format_con = logging.Formatter("%(message)s")
-        console_handler.addFilter(lambda record: record.levelno in console_level)
-        console_handler.setFormatter(format_con)
-        logger.addHandler(console_handler)
+        # format for all handlers
+        format = logging.Formatter(
+            "%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+        
+        # activity log handler
+        activity_handler = RotatingFileHandler(activity_log, maxBytes=5_000_000, backupCount=3)
+        activity_handler.setLevel(logging.DEBUG)
+        activity_handler.addFilter(lambda record: record.levelno < logging.ERROR)
+        activity_handler.setFormatter(format)
+        logger.addHandler(activity_handler)
+
+        # error log handler
+        error_handler = RotatingFileHandler(error_log, maxBytes=5_000_000, backupCount=3)
+        error_handler.setLevel(logging.ERROR)
+        error_handler.setFormatter(format)
+        logger.addHandler(error_handler)
+
+        # stream log handler
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.debug)
+        stream_handler.setFormatter(logging.Formatter("%(message)s"))
+        stream_handler.addFilter(lambda record: record.levelno < logging.ERROR)
+        logger.addHandler(stream_handler)
 
     return logger
