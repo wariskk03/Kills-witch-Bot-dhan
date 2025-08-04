@@ -1,6 +1,5 @@
-*.env
-*.sh
 .venv
 __pycache__/
 .DS_Store
-*.log
+logs/
+.config_vars.json

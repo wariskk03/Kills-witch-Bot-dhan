@@ -2,8 +2,12 @@ import time
 import requests
 from datetime import datetime
 
-from config import base_url, timeout, create_session, session as global_session
+from config import load_config, create_session, session as global_session
 from log_config import log_config
+
+config = load_config()
+base_url = config["base_url"]
+timeout = config["timeout"]
 
 logger = log_config(__name__)
 

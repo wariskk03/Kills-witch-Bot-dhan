@@ -1,15 +1,18 @@
-import os
 import requests
+import json
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
-from dotenv import load_dotenv
 
-load_dotenv()
-
-polling_interval = 1
-DAILY_RISK = -550
-base_url = "https://api.dhan.co/v2"
-timeout = 5
+def load_config():
+    with open("config_vars.json") as f:
+        vars = json.load(f)
+    return {
+    "polling_interval" : 1,
+    "daily_risk" : vars["daily_risk"],
+    "base_url" : "https://api.dhan.co/v2",
+    "timeout" : 5,
+    "access_token": vars["access_token"]
+    }
 
 def create_session():
     retry = Retry(
@@ -29,7 +32,7 @@ def create_session():
     s.mount("http://", adapter)
 
     s.headers.update({
-        "access-token": os.getenv("ACCESS_TOKEN"),
+        "access-token": load_config()["access_token"],
         "Content-Type": "application/json",
         "Accept": "application/json"
     })

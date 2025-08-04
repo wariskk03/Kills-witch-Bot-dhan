@@ -1,9 +1,13 @@
 import os
 import time
 
-from config import DAILY_RISK, polling_interval, session
+from config import load_config
 from utils import *
 from log_config import log_config
+
+config = load_config()
+DAILY_RISK = config["daily_risk"]
+polling_interval = config["polling_interval"]
 
 logger = log_config(__name__)
 
