@@ -1,5 +1,6 @@
 import json
 import os
+from helper import get_input
 
 CONFIG_PATH = "config_vars.json"
 
@@ -35,7 +36,7 @@ def setup():
     print("3. Both")
     print("4. Cancel")
     
-    choice = input("Enter your choice (1-4): ").strip()
+    choice = get_input("Enter your choice (1-4): ", valid_input={"1","2","3","4"}).strip()
 
     if choice == "1":
         config["access_token"] = prompt_for_value("Enter new access token", config["access_token"])

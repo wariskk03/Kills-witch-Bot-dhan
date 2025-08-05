@@ -1,5 +1,5 @@
-from engine import run_killswitch_bot
 from config import session
+from engine import run_killswitch_bot
 from log_config import log_config
 
 logger = log_config(__name__)
