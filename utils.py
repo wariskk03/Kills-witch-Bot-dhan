@@ -13,7 +13,7 @@ logger = log_config(__name__)
 
 session = global_session
 
-def make_requests(method, endpoint, param=None, payload=None):
+def make_requests(method:str, endpoint:str, param:dict=None, payload:dict=None):
     '''
     Handle requests error.
     And
@@ -238,18 +238,14 @@ def deactivate_killswitch():
     deactivates the killswitch
     '''
     try:
+        param = {"killSwitchStatus":"DEACTIVATE"}
+        response = make_requests(method="post", endpoint="/killswitch", param=param)
+        status = response.get("killSwitchStatus") 
 
-        kill_switch_status = make_requests(method="get", endpoint="/killswitch").get("killSwitchStatus")
-
-        if kill_switch_status == "ACTIVE":
-            param = {"killSwitchStatus":"DEACTIVATE"}
-            response = make_requests(method="post", endpoint="/killswitch", param=param)
-            status = response.get("killSwitchStatus") 
-
-            if status == "Kill Switch Deactivated":
-                logger.info("🟢 Kill Switch DEACTIVATED!")
-            else:
-                logger.info(f"⚠️ Unexpected Deactivating Kill Switch Status: {status}")
+        if status == "Kill Switch Deactivated":
+            logger.info(f"🟢 KILL SWITCH DEACTIVATE STATUS: {status}")
+        else:
+            logger.info(f"⚠️ Unexpected Deactivating Kill Switch Status: {status}")
 
     except Exception as e:
         logger.exception("❌ Error in Deactivating Killswitch")

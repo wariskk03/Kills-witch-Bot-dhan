@@ -58,7 +58,7 @@ def run_killswitch_bot():
 
                 try:
                     logger.info("🫡 Final Check")
-                    time.sleep(1)
+
                     orders = make_requests(method="get", endpoint="/orders")
                     pending_orders = fetch_pending_orders(orders)
 
@@ -74,9 +74,21 @@ def run_killswitch_bot():
 
                 if closed_flag and canceled_flag:
                     kill_switch()
-                    deactivate_killswitch()
-                    kill_switch()
-                    break
+                    
+                    try:
+                        kill_switch_status = make_requests(method="get", endpoint="/killswitch").get("killSwitchStatus")
+                    except Exception as e:
+                        logger.exception("⚠️ Error in getting killswitch status")
+
+                    if kill_switch_status == "ACTIVE":
+                        deactivate_killswitch()
+                        kill_switch()
+                        break
+                    else:
+                        continue
+
+                else:
+                    logger.warning("Positions or orders are still open")
 
             if trading_hour_over():
                 logger.info("⏰ Trading hours over. Exiting bot.")
